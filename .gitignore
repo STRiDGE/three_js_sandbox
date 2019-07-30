@@ -1,0 +1,14 @@
+/target/
+/.settings/
+/.mvn/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### Node
+node_modules
+package-lock.json
+/src/main/resources/static/built
