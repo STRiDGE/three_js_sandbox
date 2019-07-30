@@ -4,7 +4,12 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 let scene, aspect, camera, renderer, controls;
 
-let mouse = { x: 0, y: 0 }, INTERSECTED;
+let mouse = {x: 0, y: 0};
+// let INTERSECTED;
+
+let animated = [];
+
+
 init();
 animate();
 
@@ -90,22 +95,77 @@ function update() {
 
 	let intersects = raycaster.intersectObjects( scene.children, true );
 
-	if (intersects.length > 0) {
-		//console.log('intersect', intersects[0].object.material.color.getHex());
-		if (intersects[0].object !== INTERSECTED) {
-			if (INTERSECTED) {
-				INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-			}
+	// if (intersects.length > 0) {
+	// 	//console.log('intersect', intersects[0].object.material.color.getHex());
+	// 	if (intersects[0].object !== INTERSECTED) {
+	// 		if (INTERSECTED) {
+	// 			INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+	// 		}
+	//
+	// 		INTERSECTED = intersects[ 0 ].object;
+	// 		INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+	// 		INTERSECTED.material.color.setHex(0xff0000);
+	// 	}
+	// } else {
+	// 	if (INTERSECTED) {
+	// 		INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+	// 		INTERSECTED = null;
+	// 	}
+	// }
 
-			INTERSECTED = intersects[ 0 ].object;
-			INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-			INTERSECTED.material.color.setHex(0xff0000);
+	let over;
+	if (intersects.length > 0) {
+		// if interested not in animated yet, add it
+
+		over = intersects[0].object;
+
+		if (!animated.includes(over)) {
+			// console.log('add');
+			over.isOver = true;
+			animated.push(over);
+		} else {
+			// if it is being animated but not over, set over again
+			animated[animated.indexOf(over)].isOver = true;
 		}
-	} else {
-		if (INTERSECTED) {
-			INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-			INTERSECTED = null;
+	}
+
+	// console.log(over);
+
+	// if any item was intersected but not anymore, flip it
+	animated.forEach( function (item) {
+		if (item.isOver) {
+			if (item !== over) {
+				// console.log('flip');
+				item.isOver = false;
+			}
 		}
+	});
+
+	let i = animated.length - 1;
+
+	while (i >= 0) {
+		let item = animated[i];
+
+		// console.log(item.material.color.g);
+		if (item.isOver) {
+			// if intersected, decrease green (until 0) but don't pop it
+
+			if (item.material.color.g > 0) {
+				item.material.color.g -= 0.05;
+			}
+		} else {
+			// if not intersected, increase green (until 1) and pop it
+			item.material.color.g += 0.01;
+
+			if (item.material.color.g >= 1) {
+				item.material.color.g = 1;
+				animated.splice(i, 1);
+				// console.log('pop', animated.length);
+			}
+		}
+
+		i -= 1;
+
 	}
 
 	// console.log('INTERSECTED', INTERSECTED);
