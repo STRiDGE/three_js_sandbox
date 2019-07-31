@@ -47,6 +47,68 @@ function animate() {
 	update();
 }
 
+function createBrick(x, y, color = 0xffff00) {
+	let material = new THREE.MeshStandardMaterial({color: color});
+
+	//let geometry = new THREE.BoxGeometry(3, 1, 2);
+	// borrowed from https://discourse.threejs.org/t/round-edged-box/1402
+
+
+	const radius0 = 0.1;
+	const smoothness = 2;
+	const width = 3;
+	const height = 1;
+	const depth = 2;
+
+	let shape = new THREE.Shape();
+	let eps = 0.00001;
+	let radius = radius0 - eps;
+	shape.absarc( eps, eps, eps, -Math.PI / 2, -Math.PI, true );
+	shape.absarc( eps, height -  radius * 2, eps, Math.PI, Math.PI / 2, true );
+	shape.absarc( width - radius * 2, height -  radius * 2, eps, Math.PI / 2, 0, true );
+	shape.absarc( width - radius * 2, eps, eps, 0, -Math.PI / 2, true );
+	let geometry = new THREE.ExtrudeBufferGeometry( shape, {
+		depth: depth - radius0 * 2,
+		bevelEnabled: true,
+		bevelSegments: smoothness * 2,
+		steps: 1,
+		bevelSize: radius,
+		bevelThickness: radius0,
+		curveSegments: smoothness
+	});
+
+	geometry.center();
+
+	const brick = new THREE.Mesh(
+		geometry
+		, material
+	);
+
+	brick.position.set(x, y, 0);
+	return brick;
+}
+
+function createBrickWall() {
+	const brickWall = new THREE.Group();
+	const numLayers = 4;
+	const layerSize = 10;
+
+	for (let layer = 0; layer < numLayers; layer++) {
+		let y = layer - (numLayers / 2);
+
+		for (let i = 0; i < layerSize; i++) {
+			let x = (layerSize * 3) / 2 - (i * 3);
+			if (layer % 2 === 0) {
+				x = x + 1.5;
+			}
+
+			brickWall.add(createBrick(x, y));
+		}
+	}
+
+	return brickWall;
+}
+
 function setScene() {
 // var geometry = ;
 // var material = new THREE.MeshNormalMaterial();
@@ -54,24 +116,20 @@ function setScene() {
 // const cube = new THREE.Mesh(new THREE.BoxGeometry(3, 1, 2), material);
 // scene.add(cube);
 
-	const brickWall = new THREE.Group();
-	scene.add(brickWall);
 
-	for (let i = 0; i < 10; i++) {
-		const brick = new THREE.Mesh(
-			new THREE.BoxGeometry(3, 1, 2)
-			, new THREE.MeshStandardMaterial({ color: 0xffff00 })
-		);
-		brick.position.set(15 - (i * 3.1), -1, 0);
-		brickWall.add(brick);
+	scene.add(createBrickWall());
 
-		const brick2 = new THREE.Mesh(
-			new THREE.BoxGeometry(3, 1, 2)
-			, new THREE.MeshStandardMaterial({ color: 0xffff00 })
-		);
-		brick2.position.set(13.5 - (i * 3.1), -2.1, 0);
-		brickWall.add(brick2);
-	}
+	// for (let i = 0; i < 10; i++) {
+	// 	const brick = createBrick(15 - (i * 3.1), -1);
+	// 	brickWall.add(brick);
+	//
+	// 	const brick2 = new THREE.Mesh(
+	// 		new THREE.BoxGeometry(3, 1, 2)
+	// 		, new THREE.MeshStandardMaterial({ color: 0xffff00 })
+	// 	);
+	// 	brick2.position.set(13.5 - (i * 3.1), -2.1, 0);
+	// 	brickWall.add(brick2);
+	// }
 
 // const light = new THREE.PointLight(0xdddddd, 0.8);
 // light.position.set(-80, 80, 80);
