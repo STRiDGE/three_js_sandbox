@@ -41,4 +41,27 @@ export class Brick extends THREE.Mesh{
 		return geometry;
 	}
 
+	// IDEA Make the fact that if this returns true it needs to be popped from the animation collection more visible
+	updateAnimation() {
+		if (this.isOver) {
+			// if intersected, decrease green (until 0) but don't pop it
+
+			if (this.material.color.g > 0) {
+				this.material.color.g -= 0.05;
+			}
+		} else {
+			// if not intersected, increase green (until 1) and pop it
+			this.material.color.g += 0.01;
+
+			if (this.material.color.g >= 1) {
+				this.material.color.g = 1;
+				//animated.splice(i, 1);
+				return true;
+				// console.log('pop', animated.length);
+			}
+		}
+
+		return false;
+	}
+
 }

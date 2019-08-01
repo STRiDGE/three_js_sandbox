@@ -79,36 +79,9 @@ function createBrickWall() {
 }
 
 function setScene() {
-// var geometry = ;
-// var material = new THREE.MeshNormalMaterial();
-// 	const material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-// const cube = new THREE.Mesh(new THREE.BoxGeometry(3, 1, 2), material);
-// scene.add(cube);
-
-
 	scene.add(createBrickWall());
-
-	// for (let i = 0; i < 10; i++) {
-	// 	const brick = createBrick(15 - (i * 3.1), -1);
-	// 	brickWall.add(brick);
-	//
-	// 	const brick2 = new THREE.Mesh(
-	// 		new THREE.BoxGeometry(3, 1, 2)
-	// 		, new THREE.MeshStandardMaterial({ color: 0xffff00 })
-	// 	);
-	// 	brick2.position.set(13.5 - (i * 3.1), -2.1, 0);
-	// 	brickWall.add(brick2);
-	// }
-
-// const light = new THREE.PointLight(0xdddddd, 0.8);
-// light.position.set(-80, 80, 80);
-
 }
 
-
-
-// let i = 0;
-// let grow = true;
 
 function render() {
 	renderer.render(scene, camera);
@@ -122,32 +95,12 @@ function update() {
 
 	let intersects = raycaster.intersectObjects( scene.children, true );
 
-	// if (intersects.length > 0) {
-	// 	//console.log('intersect', intersects[0].object.material.color.getHex());
-	// 	if (intersects[0].object !== INTERSECTED) {
-	// 		if (INTERSECTED) {
-	// 			INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-	// 		}
-	//
-	// 		INTERSECTED = intersects[ 0 ].object;
-	// 		INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-	// 		INTERSECTED.material.color.setHex(0xff0000);
-	// 	}
-	// } else {
-	// 	if (INTERSECTED) {
-	// 		INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-	// 		INTERSECTED = null;
-	// 	}
-	// }
-
 	let over;
 	if (intersects.length > 0) {
-		// if interested not in animated yet, add it
-
 		over = intersects[0].object;
 
 		if (!animated.includes(over)) {
-			// console.log('add');
+			// if interested not in animated yet, add it
 			over.isOver = true;
 			animated.push(over);
 		} else {
@@ -156,9 +109,7 @@ function update() {
 		}
 	}
 
-	// console.log(over);
-
-	// if any item was intersected but not anymore, flip it
+	// if any item was over but not intersected anymore, disable over flag
 	animated.forEach( function (item) {
 		if (item.isOver) {
 			if (item !== over) {
@@ -173,29 +124,15 @@ function update() {
 	while (i >= 0) {
 		let item = animated[i];
 
-		// console.log(item.material.color.g);
-		if (item.isOver) {
-			// if intersected, decrease green (until 0) but don't pop it
-
-			if (item.material.color.g > 0) {
-				item.material.color.g -= 0.05;
-			}
-		} else {
-			// if not intersected, increase green (until 1) and pop it
-			item.material.color.g += 0.01;
-
-			if (item.material.color.g >= 1) {
-				item.material.color.g = 1;
+		if (item instanceof Brick) {
+			if (item.updateAnimation()) {
 				animated.splice(i, 1);
-				// console.log('pop', animated.length);
 			}
 		}
 
 		i -= 1;
 
 	}
-
-	// console.log('INTERSECTED', INTERSECTED);
 
 	controls.update();
 }
