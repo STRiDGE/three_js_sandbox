@@ -95,6 +95,8 @@ function update() {
 
 	let intersects = raycaster.intersectObjects( scene.children, true );
 
+	// IDEA Make Brick implement interface Hoverable with methods like onOver and onOut
+
 	let over;
 	if (intersects.length > 0) {
 		over = intersects[0].object;
@@ -124,6 +126,7 @@ function update() {
 	while (i >= 0) {
 		let item = animated[i];
 
+		// IDEA Make Brick implement HoverAnimation or something.  Probably combine with Hoverable
 		if (item instanceof Brick) {
 			if (item.updateAnimation()) {
 				animated.splice(i, 1);
