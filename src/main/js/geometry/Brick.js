@@ -6,6 +6,52 @@ export class Brick extends THREE.Mesh{
 		super(Brick.makeGeometry(), material);
 	}
 
+	onMouseOver() {
+		// this.material.color.setHex(0xff0000);
+		// console.log("over");
+		this.isOver = true;
+		if (!this.hoverTimer) {
+			const t = this;
+			this.hoverTimer = setInterval(function () { t.animateHover(); }, 16);
+		}
+	}
+
+	onMouseOut() {
+		// this.material.color.setHex(0xffff00);
+		// console.log("out");
+		this.isOver = false;
+		if (!this.hoverTimer) {
+			const t = this;
+			this.hoverTimer = setInterval(function () { t.animateHover(); }, 16);
+		}
+	}
+
+	animateHover() {
+		if (!this.material) {
+			clearInterval(this.hoverTimer);
+			this.hoverTimer = null;
+			console.log("No material");
+			return;
+		}
+
+		if (this.isOver) {
+			this.material.color.g -= 0.05;
+			if (this.material.color.g <= 0) {
+				this.material.color.g = 0;
+				clearInterval(this.hoverTimer);
+				this.hoverTimer = null;
+			}
+		} else {
+			this.material.color.g += 0.01;
+
+			if (this.material.color.g >= 1) {
+				this.material.color.g = 1;
+				clearInterval(this.hoverTimer);
+				this.hoverTimer = null;
+			}
+		}
+	}
+
 	static defaultMaterial() {
 		return new THREE.MeshStandardMaterial({color: 0xffff00})
 	}
@@ -39,29 +85,6 @@ export class Brick extends THREE.Mesh{
 		geometry.center();
 
 		return geometry;
-	}
-
-	// IDEA Make the fact that if this returns true it needs to be popped from the animation collection more visible
-	updateAnimation() {
-		if (this.isOver) {
-			// if intersected, decrease green (until 0) but don't pop it
-
-			if (this.material.color.g > 0) {
-				this.material.color.g -= 0.05;
-			}
-		} else {
-			// if not intersected, increase green (until 1) and pop it
-			this.material.color.g += 0.01;
-
-			if (this.material.color.g >= 1) {
-				this.material.color.g = 1;
-				//animated.splice(i, 1);
-				return true;
-				// console.log('pop', animated.length);
-			}
-		}
-
-		return false;
 	}
 
 }

@@ -8,9 +8,7 @@ import {Brick} from "./geometry/Brick";
 let scene, aspect, camera, renderer, controls;
 
 let mouse = {x: 0, y: 0};
-// let INTERSECTED;
-
-let animated = [];
+let intersected;
 
 
 init();
@@ -95,46 +93,33 @@ function update() {
 
 	let intersects = raycaster.intersectObjects( scene.children, true );
 
-	// IDEA Make Brick implement interface Hoverable with methods like onOver and onOut
-
 	let over;
 	if (intersects.length > 0) {
 		over = intersects[0].object;
 
-		if (!animated.includes(over)) {
-			// if interested not in animated yet, add it
-			over.isOver = true;
-			animated.push(over);
+		if (over === intersected) {
+			// same object, do nothing
 		} else {
-			// if it is being animated but not over, set over again
-			animated[animated.indexOf(over)].isOver = true;
-		}
-	}
-
-	// if any item was over but not intersected anymore, disable over flag
-	animated.forEach( function (item) {
-		if (item.isOver) {
-			if (item !== over) {
-				// console.log('flip');
-				item.isOver = false;
+			if (typeof over.onMouseOver === "function") {
+				over.onMouseOver();
 			}
-		}
-	});
 
-	let i = animated.length - 1;
-
-	while (i >= 0) {
-		let item = animated[i];
-
-		// IDEA Make Brick implement HoverAnimation or something.  Probably combine with Hoverable
-		if (item instanceof Brick) {
-			if (item.updateAnimation()) {
-				animated.splice(i, 1);
+			if (intersected) {
+				if (typeof intersected.onMouseOut === "function") {
+					intersected.onMouseOut();
+				}
 			}
+
+			intersected = over;
 		}
+	} else {
+		if (intersected) {
+			if (typeof intersected.onMouseOut === "function") {
+				intersected.onMouseOut();
+			}
 
-		i -= 1;
-
+			intersected = undefined;
+		}
 	}
 
 	controls.update();
