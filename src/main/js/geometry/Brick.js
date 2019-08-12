@@ -53,7 +53,11 @@ export class Brick extends THREE.Mesh{
 	}
 
 	static defaultMaterial() {
-		return new THREE.MeshStandardMaterial({color: 0xffff00})
+		const env = new THREE.CubeTextureLoader()
+			.setPath( 'textures/cube/pisa/' )
+			.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+
+		return new THREE.MeshStandardMaterial({color: 0xffff00, envMap: env})
 	}
 
 	static makeGeometry() {

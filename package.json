@@ -5,7 +5,8 @@
     "three": "^0.106.2"
   },
   "scripts": {
-    "watch": "webpack --watch -d"
+    "watch": "webpack --watch -d",
+    "server": "http-server ./src/main/resources/static -c-1 -p9090"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
