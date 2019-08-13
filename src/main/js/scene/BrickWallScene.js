@@ -54,6 +54,8 @@ export class BrickWallScene {
 
 		this.setScene();
 
+		this.scene.background = Brick.getCubeMap();
+
 		console.log('BrickWallScene loaded')
 	}
 

@@ -52,19 +52,25 @@ export class Brick extends THREE.Mesh{
 		}
 	}
 
-	static defaultMaterial() {
-		const env = new THREE.CubeTextureLoader()
+	static getCubeMap() {
+		return new THREE.CubeTextureLoader()
 			.setPath( 'textures/cube/pisa/' )
 			.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+	}
 
-		return new THREE.MeshStandardMaterial({color: 0xffff00, envMap: env})
+	static defaultMaterial() {
+		return new THREE.MeshLambertMaterial({
+			color: 0xffff00
+			, envMap: this.getCubeMap()
+			, reflectivity: 0.5
+		})
 	}
 
 	static makeGeometry() {
 		// borrowed from https://discourse.threejs.org/t/round-edged-box/1402
 
 		const radius0 = 0.1;
-		const smoothness = 2;
+		const smoothness = 20;
 		const width = 3;
 		const height = 1;
 		const depth = 2;
