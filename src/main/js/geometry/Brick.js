@@ -2,8 +2,8 @@ const THREE = require('three');
 
 export class Brick extends THREE.Mesh{
 
-	constructor(material = Brick.defaultMaterial()) {
-		super(Brick.makeGeometry(), material);
+	constructor(width = 3, height = 1, depth = 2, material = Brick.getMaterial()) {
+		super(Brick.makeGeometry(width, height, depth), material);
 	}
 
 	onMouseOver() {
@@ -58,7 +58,7 @@ export class Brick extends THREE.Mesh{
 			.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
 	}
 
-	static defaultMaterial() {
+	static getMaterial() {
 		return new THREE.MeshLambertMaterial({
 			color: 0xffff00
 			, envMap: this.getCubeMap()
@@ -66,14 +66,11 @@ export class Brick extends THREE.Mesh{
 		})
 	}
 
-	static makeGeometry() {
+	static makeGeometry(width, height, depth) {
 		// borrowed from https://discourse.threejs.org/t/round-edged-box/1402
 
 		const radius0 = 0.1;
-		const smoothness = 20;
-		const width = 3;
-		const height = 1;
-		const depth = 2;
+		const smoothness = 2;
 
 		let shape = new THREE.Shape();
 		let eps = 0.00001;

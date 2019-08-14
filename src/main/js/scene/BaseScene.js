@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {Brick} from "../geometry/Brick";
 
-export class Scene {
+export class BaseScene {
 
 	constructor() {
 		this.init();
@@ -16,22 +16,21 @@ export class Scene {
 		this.scene = null;
 		this.camera = null;
 		this.controls = null;
-		this.empty(this.renderer.domElement);
+		BaseScene.empty(this.renderer.domElement);
 		document.body.removeChild(this.renderer.domElement);
 	}
 
-	empty(elem) {
+	static empty(elem) {
 		while (elem.lastChild) elem.removeChild(elem.lastChild);
 	}
 
 	init() {
 		const width = window.innerWidth - 16;
-		const height = window.innerHeight - 20;
+		const height = window.innerHeight - 50;
 
 		this.scene = new THREE.Scene();
 		let aspect = width / height;
-		this.camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-		this.camera.position.z = 10;
+		this.camera = BaseScene.createCamera(aspect);
 
 		this.renderer = new THREE.WebGLRenderer();
 
@@ -40,16 +39,12 @@ export class Scene {
 
 		this.controls = new OrbitControls(this.camera);
 
-		const light = new THREE.DirectionalLight(0xdddddd, 0.8);
-		light.position.set(-80, 80, 80);
-		this.scene.add(light);
-
-		const ambientLight = new THREE.AmbientLight(0x444444);
-		this.scene.add(ambientLight);
+		this.addDirectionalLight();
+		this.addAmbientLight();
 
 		document.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
 
-		this.mouse = {x: 0, y: 0};
+		this.mouse = {x: 1000, y: 1000};
 		this.intersected = null;
 
 		this.setScene();
@@ -57,6 +52,24 @@ export class Scene {
 		this.scene.background = Brick.getCubeMap();
 
 		console.log('BrickWallScene loaded')
+	}
+
+	addAmbientLight() {
+		this.scene.add(new THREE.AmbientLight(0x444444));
+	}
+
+	addDirectionalLight() {
+		const light = new THREE.DirectionalLight(0xffffff, 0.8);
+		light.position.set(-1, 1, 1);
+		light.castShadow = true;
+
+		this.scene.add(light);
+	}
+
+	static createCamera(aspect) {
+		const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+		camera.position.z = 20;
+		return camera;
 	}
 
 	animate() {
