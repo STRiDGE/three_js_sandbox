@@ -2,8 +2,7 @@
   "name": "three-sandbox",
   "version": "0.0.1",
   "dependencies": {
-    "three": "^0.106.2",
-    "ecstatic": "3.0.0"
+    "three": "^0.106.2"
   },
   "scripts": {
     "watch": "webpack --watch -d",
